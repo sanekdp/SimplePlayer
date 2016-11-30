@@ -1,5 +1,6 @@
-package com.example.java.simpleplayer.servises;
+package com.example.java.simpleplayer.services;
 
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -11,11 +12,13 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.provider.MediaStore;
-import android.support.compat.BuildConfig;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.io.IOException;
+import com.example.java.simpleplayer.BuildConfig;
+import com.example.java.simpleplayer.MainActivity;
+import com.example.java.simpleplayer.R;
 
 
 public class PlayBackService extends Service implements MediaPlayer.OnPreparedListener {
@@ -23,6 +26,7 @@ public class PlayBackService extends Service implements MediaPlayer.OnPreparedLi
     public static final String ACTION_PLAY = BuildConfig.APPLICATION_ID + ".action.PLAY";
 
     public static final String TAG = PlayBackService.class.getSimpleName();
+    private static final int NOTIFICATION_ID = 101;
 
     private final IBinder mBinder = new PlayBackBinder();
 
@@ -42,21 +46,21 @@ public class PlayBackService extends Service implements MediaPlayer.OnPreparedLi
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        if (intent.getAction().equals(ACTION_PLAY)){
-            mMideaPlayer = new MediaPlayer();
+            if (intent.getAction().equals(ACTION_PLAY)) {
             try {
+                mMideaPlayer = new MediaPlayer();
                 mMideaPlayer.setDataSource(this, getSong());
-            } catch (IOException e) {
+                mMideaPlayer.setOnPreparedListener(this);
+                mMideaPlayer.prepareAsync();
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-            mMideaPlayer.setOnPreparedListener(this);
-            mMideaPlayer.prepareAsync();
         }
 
         return Service.START_STICKY;
     }
 
-    private Uri getSong(){
+    private Uri getSong() {
         ContentResolver contentResolver = getContentResolver();
         Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor cursor = contentResolver.query(uri, null, null, null, null);
@@ -82,6 +86,21 @@ public class PlayBackService extends Service implements MediaPlayer.OnPreparedLi
     public void onPrepared(MediaPlayer mediaPlayer) {
 
         mediaPlayer.start();
+
+        PendingIntent pi = PendingIntent.getActivity(
+                getApplicationContext(),
+                0,
+                new Intent(getApplicationContext(), MainActivity.class),
+                PendingIntent.FLAG_NO_CREATE);
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle("My notification")
+                        .setContentText("Hello World!")
+                        .setContentIntent(pi);
+
+        startForeground(NOTIFICATION_ID, builder.build());
 
     }
 

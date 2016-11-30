@@ -4,13 +4,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.example.java.simpleplayer.servises.PlayBackService;
+import com.example.java.simpleplayer.services.PlayBackService;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -44,12 +42,12 @@ public class MainActivity extends AppCompatActivity {
         playBackIntent.setAction(PlayBackService.ACTION_PLAY);
         startService(playBackIntent);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                stopService(PlayBackService.newInstance(MainActivity.this));
-            }
-        }, 10000);
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                stopService(PlayBackService.newInstance(MainActivity.this));
+//            }
+//        }, 10000);
 
 
     }
