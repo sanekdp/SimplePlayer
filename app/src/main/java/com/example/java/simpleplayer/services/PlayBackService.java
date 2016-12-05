@@ -11,12 +11,13 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
+import android.provider.MediaStore;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.example.java.simpleplayer.BuildConfig;
-import com.example.java.simpleplayer.MainActivity;
+import com.example.java.simpleplayer.views.MainActivity;
 import com.example.java.simpleplayer.R;
 
 public class PlayBackService extends Service implements MediaPlayer.OnPreparedListener {
@@ -61,20 +62,20 @@ public class PlayBackService extends Service implements MediaPlayer.OnPreparedLi
 
     private Uri getSongs() {
         ContentResolver contentResolver = getContentResolver();
-        Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor cursor = contentResolver.query(uri, null, null, null, null);
         if (cursor == null) {
             // query failed, handle error.
         } else if (!cursor.moveToFirst()) {
             // no media on the device
         } else {
-            int titleColumn = cursor.getColumnIndex(android.provider.MediaStore.Audio.Media.TITLE);
-            int idColumn = cursor.getColumnIndex(android.provider.MediaStore.Audio.Media._ID);
+            int titleColumn = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            int idColumn = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
             do {
                 long thisId = cursor.getLong(idColumn);
                 String thisTitle = cursor.getString(titleColumn);
                 Uri contentUri = ContentUris.withAppendedId(
-                        android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                         thisId);
 
                 return contentUri;

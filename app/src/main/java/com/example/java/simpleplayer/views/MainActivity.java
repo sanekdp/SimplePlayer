@@ -1,4 +1,4 @@
-package com.example.java.simpleplayer;
+package com.example.java.simpleplayer.views;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -9,10 +9,21 @@ import android.os.IBinder;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
+import com.example.java.simpleplayer.R;
+import com.example.java.simpleplayer.model.Song;
+import com.example.java.simpleplayer.presenters.SongsPresenter;
 import com.example.java.simpleplayer.services.PlayBackService;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity implements SongsView {
+
+    public static final String TAG = MainActivity.class.getSimpleName();
+
+    private SongsPresenter mPresenter = new SongsPresenter();
+
 
     private PlayBackService mService;
     private boolean mBound = false;
@@ -38,7 +49,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        mPresenter.onAttachToView(this);
+        mPresenter.loadAllSongs();
         Intent playBackIntent = PlayBackService.newInstance(this);
         playBackIntent.setAction(PlayBackService.ACTION_PLAY);
         startService(playBackIntent);
@@ -63,10 +75,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        mPresenter.onDetach();
         if (mBound) {
             unbindService(mConnection);
             mBound = false;
         }
     }
 
+    @Override
+    public Context getContext() {
+        return this;
+    }
+
+    @Override
+    public void onAllSongsLoaded(List<Song> songList) {
+        Log.d(TAG, "" + songList.get(0).title);
+    }
 }
