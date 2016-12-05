@@ -11,7 +11,6 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
-import android.provider.MediaStore;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -19,7 +18,6 @@ import android.widget.Toast;
 import com.example.java.simpleplayer.BuildConfig;
 import com.example.java.simpleplayer.MainActivity;
 import com.example.java.simpleplayer.R;
-
 
 public class PlayBackService extends Service implements MediaPlayer.OnPreparedListener {
 
@@ -30,7 +28,7 @@ public class PlayBackService extends Service implements MediaPlayer.OnPreparedLi
 
     private final IBinder mBinder = new PlayBackBinder();
 
-    private MediaPlayer mMideaPlayer = null;
+    private MediaPlayer mMediaPlayer = null;
 
     public static Intent newInstance(Context context) {
         return new Intent(context, PlayBackService.class);
@@ -45,13 +43,14 @@ public class PlayBackService extends Service implements MediaPlayer.OnPreparedLi
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-            if (intent.getAction().equals(ACTION_PLAY)) {
+        Log.d(TAG, "onStartCommand(" + intent.getAction()+")");
+        if(intent.getAction() == null) return Service.START_STICKY;
+        if (intent.getAction().equals(ACTION_PLAY)) {
             try {
-                mMideaPlayer = new MediaPlayer();
-                mMideaPlayer.setDataSource(this, getSong());
-                mMideaPlayer.setOnPreparedListener(this);
-                mMideaPlayer.prepareAsync();
+                mMediaPlayer = new MediaPlayer();
+                mMediaPlayer.setDataSource(this, getSongs());
+                mMediaPlayer.setOnPreparedListener(this);
+                mMediaPlayer.prepareAsync();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -60,7 +59,7 @@ public class PlayBackService extends Service implements MediaPlayer.OnPreparedLi
         return Service.START_STICKY;
     }
 
-    private Uri getSong() {
+    private Uri getSongs() {
         ContentResolver contentResolver = getContentResolver();
         Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor cursor = contentResolver.query(uri, null, null, null, null);
@@ -74,18 +73,43 @@ public class PlayBackService extends Service implements MediaPlayer.OnPreparedLi
             do {
                 long thisId = cursor.getLong(idColumn);
                 String thisTitle = cursor.getString(titleColumn);
-                Uri contentUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, thisId);
+                Uri contentUri = ContentUris.withAppendedId(
+                        android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                        thisId);
 
                 return contentUri;
+                // ...process entry...
             } while (cursor.moveToNext());
         }
         return null;
     }
 
     @Override
-    public void onPrepared(MediaPlayer mediaPlayer) {
+    public void onDestroy() {
+        super.onDestroy();
 
-        mediaPlayer.start();
+        Toast.makeText(this, "onDestroy()", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onDestroy()");
+    }
+
+    /*@Override
+    public boolean onUnbind(Intent intent) {
+        Toast.makeText(this, "onUnbind()", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onUnbind()");
+        return super.onUnbind(intent);
+    }*/
+
+    public PlayBackService() {
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return mBinder;
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mediaPlayer) {
+        mMediaPlayer.start();
 
         PendingIntent pi = PendingIntent.getActivity(
                 getApplicationContext(),
@@ -101,30 +125,6 @@ public class PlayBackService extends Service implements MediaPlayer.OnPreparedLi
                         .setContentIntent(pi);
 
         startForeground(NOTIFICATION_ID, builder.build());
-
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Toast.makeText(this, "onDestroy()", Toast.LENGTH_SHORT).show();
-        Log.d(TAG, "onDestroy()");
-    }
-
-    @Override
-    public boolean onUnbind(Intent intent) {
-        Toast.makeText(this, "onUnbind()", Toast.LENGTH_SHORT).show();
-        Log.d(TAG, "onUnbind()");
-        return super.onUnbind(intent);
-    }
-
-    public PlayBackService() {
-
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return mBinder;
     }
 
     public class PlayBackBinder extends Binder {
@@ -132,4 +132,5 @@ public class PlayBackService extends Service implements MediaPlayer.OnPreparedLi
             return PlayBackService.this;
         }
     }
+
 }
