@@ -9,7 +9,11 @@ import android.os.IBinder;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.example.java.simpleplayer.R;
 import com.example.java.simpleplayer.model.Song;
@@ -21,9 +25,9 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements SongsView {
 
     public static final String TAG = MainActivity.class.getSimpleName();
+    private static final int SPAN_COUNT = 2;
 
     private SongsPresenter mPresenter = new SongsPresenter();
-
 
     private PlayBackService mService;
     private boolean mBound = false;
@@ -45,22 +49,24 @@ public class MainActivity extends AppCompatActivity implements SongsView {
         }
     };
 
+    private RecyclerView mRecyclerView;
+    private ProgressBar mProgressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+
         mPresenter.onAttachToView(this);
         mPresenter.loadAllSongs();
+
         Intent playBackIntent = PlayBackService.newInstance(this);
         playBackIntent.setAction(PlayBackService.ACTION_PLAY);
         startService(playBackIntent);
 
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//               stopService(PlayBackService.newInstance(MainActivity.this));
-//            }
-//        }, 10000);
 
 
     }
@@ -89,6 +95,24 @@ public class MainActivity extends AppCompatActivity implements SongsView {
 
     @Override
     public void onAllSongsLoaded(List<Song> songList) {
-        Log.d(TAG, "" + songList.get(0).title);
+        final RecyclerView.LayoutManager manager = new GridLayoutManager(
+                this,
+                SPAN_COUNT);
+        mRecyclerView.setLayoutManager(manager);
+        mRecyclerView.setHasFixedSize(true);
+        final SongsAdapter adapter = new SongsAdapter();
+        adapter.setDataSource(songList);
+        mProgressBar.setVisibility(View.GONE);
+        mRecyclerView.setAdapter(adapter);
+        adapter.setOnItemClickListener(item -> {
+            final SongsAdapter.SongViewHolder holder =
+                    (SongsAdapter.SongViewHolder) mRecyclerView.findContainingViewHolder(item);
+            if(holder == null) return;
+            final Song song = holder.getSong();
+            final long songId = song.id;
+            if(mBound) {
+                mService.playSongId(songId);
+            }
+        });
     }
 }

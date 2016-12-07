@@ -51,7 +51,7 @@ public class PlayBackService extends Service implements MediaPlayer.OnPreparedLi
                 mMediaPlayer = new MediaPlayer();
                 mMediaPlayer.setDataSource(this, getSongs());
                 mMediaPlayer.setOnPreparedListener(this);
-                mMediaPlayer.prepareAsync();
+                // mMediaPlayer.prepareAsync();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -62,20 +62,20 @@ public class PlayBackService extends Service implements MediaPlayer.OnPreparedLi
 
     private Uri getSongs() {
         ContentResolver contentResolver = getContentResolver();
-        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor cursor = contentResolver.query(uri, null, null, null, null);
         if (cursor == null) {
             // query failed, handle error.
         } else if (!cursor.moveToFirst()) {
             // no media on the device
         } else {
-            int titleColumn = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-            int idColumn = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
+            int titleColumn = cursor.getColumnIndex(android.provider.MediaStore.Audio.Media.TITLE);
+            int idColumn = cursor.getColumnIndex(android.provider.MediaStore.Audio.Media._ID);
             do {
                 long thisId = cursor.getLong(idColumn);
                 String thisTitle = cursor.getString(titleColumn);
                 Uri contentUri = ContentUris.withAppendedId(
-                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                        android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                         thisId);
 
                 return contentUri;
@@ -118,14 +118,34 @@ public class PlayBackService extends Service implements MediaPlayer.OnPreparedLi
                 new Intent(getApplicationContext(), MainActivity.class),
                 PendingIntent.FLAG_NO_CREATE);
 
-        NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle("My notification")
-                        .setContentText("Hello World!")
-                        .setContentIntent(pi);
+//        NotificationCompat.Builder builder =
+//                new NotificationCompat.Builder(this)
+//                        .setSmallIcon(R.mipmap.ic_launcher)
+//                        .setContentTitle("My notification")
+//                        .setContentText("Hello World!")
+//                        .setContentIntent(pi);
 
-        startForeground(NOTIFICATION_ID, builder.build());
+        //startForeground(NOTIFICATION_ID, builder.build());
+    }
+
+    public void playSongId(long songId) {
+        // Song song = SongsRepository.getSongForID(this, songId);
+        Uri contentUri = ContentUris.withAppendedId(
+                android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                songId);
+        try {
+            if (mMediaPlayer != null && mMediaPlayer.isPlaying()){
+                mMediaPlayer.start();
+                mMediaPlayer.release();
+                mMediaPlayer = null;
+            }
+            mMediaPlayer = new MediaPlayer();
+            mMediaPlayer.setDataSource(this, contentUri);
+            mMediaPlayer.setOnPreparedListener(this);
+            mMediaPlayer.prepareAsync();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public class PlayBackBinder extends Binder {
@@ -133,5 +153,4 @@ public class PlayBackService extends Service implements MediaPlayer.OnPreparedLi
             return PlayBackService.this;
         }
     }
-
 }

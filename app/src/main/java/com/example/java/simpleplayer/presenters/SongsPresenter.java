@@ -29,7 +29,7 @@ public class SongsPresenter {
             @Override
             protected List<Song> doInBackground(Void... voids) {
                 try{
-                    return SongLoader.getAllSongs(mView.getContext());
+                    return SongsRepository.getAllSongs(mView.getContext());
                 }
                 catch (Exception e){
                     e.printStackTrace();
