@@ -1,5 +1,6 @@
 package com.example.java.simpleplayer.views;
 
+import android.animation.ObjectAnimator;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +14,8 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ProgressBar;
 
 import com.example.java.simpleplayer.R;
@@ -23,6 +26,11 @@ import com.example.java.simpleplayer.services.PlayBackService;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SongsView {
+
+
+    public static Intent newIntent (Context context){
+        return new Intent(context, MainActivity.class);
+    }
 
     public static final String TAG = MainActivity.class.getSimpleName();
     private static final int SPAN_COUNT = 2;
@@ -60,8 +68,22 @@ public class MainActivity extends AppCompatActivity implements SongsView {
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
 
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ObjectAnimator animator = new ObjectAnimator().ofFloat(
+                        mProgressBar,
+                        View.TRANSLATION_Y,
+                        -1000,
+                        1);
+                animator.setDuration(6000);
+                animator.start();
+            }
+        }, 10);
+
+
         mPresenter.onAttachToView(this);
-        mPresenter.loadAllSongs();
+        //mPresenter.loadAllSongs();
 
         Intent playBackIntent = PlayBackService.newInstance(this);
         playBackIntent.setAction(PlayBackService.ACTION_PLAY);
