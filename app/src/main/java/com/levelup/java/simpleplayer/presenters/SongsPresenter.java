@@ -1,11 +1,11 @@
-package com.example.java.simpleplayer.presenters;
+package com.levelup.java.simpleplayer.presenters;
 
 
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 
-import com.example.java.simpleplayer.model.Song;
-import com.example.java.simpleplayer.views.SongsView;
+import com.levelup.java.simpleplayer.model.Song;
+import com.levelup.java.simpleplayer.views.SongsView;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.example.java.simpleplayer.presenters;
+package com.levelup.java.simpleplayer.presenters;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -9,8 +9,8 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.example.java.simpleplayer.PreferencesUtility;
-import com.example.java.simpleplayer.model.Song;
+import com.levelup.java.simpleplayer.PreferencesUtility;
+import com.levelup.java.simpleplayer.model.Song;
 
 import java.util.ArrayList;
 import java.util.List;

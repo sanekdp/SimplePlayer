@@ -1,4 +1,4 @@
-package com.example.java.simpleplayer.views;
+package com.levelup.java.simpleplayer.views;
 
 import android.animation.ObjectAnimator;
 import android.content.ComponentName;
@@ -7,21 +7,17 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ProgressBar;
 
 import com.example.java.simpleplayer.R;
-import com.example.java.simpleplayer.model.Song;
-import com.example.java.simpleplayer.presenters.SongsPresenter;
-import com.example.java.simpleplayer.services.PlayBackService;
+import com.levelup.java.simpleplayer.model.Song;
+import com.levelup.java.simpleplayer.presenters.SongsPresenter;
+import com.levelup.java.simpleplayer.services.PlayBackService;
 
 import java.util.List;
 

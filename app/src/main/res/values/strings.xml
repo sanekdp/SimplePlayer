@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">SimplePlayer</string>
+    <string name="title_activity_menu">MenuActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_gallery_fragment">Hello Gallery fragment</string>
+    <string name="hello_import_fragment">Hello Import fragmen</string>
 </resources>

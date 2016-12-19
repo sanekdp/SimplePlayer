@@ -1,4 +1,4 @@
-package com.example.java.simpleplayer.services;
+package com.levelup.java.simpleplayer.services;
 
 import android.app.PendingIntent;
 import android.app.Service;
@@ -11,14 +11,11 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
-import android.provider.MediaStore;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.example.java.simpleplayer.BuildConfig;
-import com.example.java.simpleplayer.views.MainActivity;
-import com.example.java.simpleplayer.R;
+import com.levelup.java.simpleplayer.views.MainActivity;
 
 public class PlayBackService extends Service implements MediaPlayer.OnPreparedListener {
 

@@ -1,4 +1,4 @@
-package com.example.java.simpleplayer;
+package com.levelup.java.simpleplayer;
 
 import android.provider.MediaStore;
 
