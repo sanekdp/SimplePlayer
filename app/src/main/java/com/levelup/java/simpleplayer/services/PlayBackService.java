@@ -14,7 +14,8 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.java.simpleplayer.BuildConfig;
+
+import com.levelup.java.simpleplayer.BuildConfig;
 import com.levelup.java.simpleplayer.views.MainActivity;
 
 public class PlayBackService extends Service implements MediaPlayer.OnPreparedListener {

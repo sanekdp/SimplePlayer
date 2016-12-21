@@ -14,7 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.example.java.simpleplayer.R;
+import com.levelup.java.simpleplayer.R;
 import com.levelup.java.simpleplayer.model.Song;
 import com.levelup.java.simpleplayer.presenters.SongsPresenter;
 import com.levelup.java.simpleplayer.services.PlayBackService;
@@ -23,8 +23,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SongsView {
 
-
-    public static Intent newIntent (Context context){
+    public static Intent newIntent(Context context) {
         return new Intent(context, MainActivity.class);
     }
 
@@ -64,22 +63,28 @@ public class MainActivity extends AppCompatActivity implements SongsView {
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
 
+        mProgressBar.setAlpha(0);
+        mProgressBar.animate().alpha(1).setDuration(1000).start();
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                ObjectAnimator animator = new ObjectAnimator().ofFloat(
+                ObjectAnimator animator = ObjectAnimator.ofFloat(
                         mProgressBar,
                         View.TRANSLATION_Y,
-                        -1000,
-                        1);
-                animator.setDuration(6000);
+                        -2000,
+                        0);
+
+                animator.setDuration(4000);
                 animator.start();
             }
-        }, 10);
+        }, 3000);
+
+
 
 
         mPresenter.onAttachToView(this);
-        //mPresenter.loadAllSongs();
+        ///mPresenter.loadAllSongs();
 
         Intent playBackIntent = PlayBackService.newInstance(this);
         playBackIntent.setAction(PlayBackService.ACTION_PLAY);
@@ -133,4 +138,5 @@ public class MainActivity extends AppCompatActivity implements SongsView {
             }
         });
     }
+
 }

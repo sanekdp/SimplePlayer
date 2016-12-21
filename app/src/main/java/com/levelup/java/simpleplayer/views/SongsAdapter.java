@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.example.java.simpleplayer.R;
+import com.levelup.java.simpleplayer.R;
 import com.levelup.java.simpleplayer.model.Song;
 import com.levelup.java.simpleplayer.presenters.SongsRepository;
 
