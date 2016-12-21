@@ -1,4 +1,4 @@
-package com.levelup.java.simpleplayer.views;
+package com.levup.simpleplayer.views;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -11,9 +11,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.levelup.java.simpleplayer.R;
-import com.levelup.java.simpleplayer.model.Song;
-import com.levelup.java.simpleplayer.presenters.SongsRepository;
+import com.levup.simpleplayer.R;
+import com.levup.simpleplayer.model.Song;
+import com.levup.simpleplayer.presenters.SongsRepository;
 
 import java.util.List;
 

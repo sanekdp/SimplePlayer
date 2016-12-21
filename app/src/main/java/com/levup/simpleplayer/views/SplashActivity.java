@@ -1,4 +1,4 @@
-package com.levelup.java.simpleplayer.views;
+package com.levup.simpleplayer.views;
 
 import android.app.Activity;
 import android.os.Bundle;

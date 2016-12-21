@@ -1,4 +1,4 @@
-package com.levelup.java.simpleplayer.model;
+package com.levup.simpleplayer.model;
 
 public class Song {
 

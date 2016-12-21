@@ -1,4 +1,4 @@
-package com.levelup.java.simpleplayer;
+package com.levup.simpleplayer;
 
 import android.content.Context;
 import android.content.SharedPreferences;

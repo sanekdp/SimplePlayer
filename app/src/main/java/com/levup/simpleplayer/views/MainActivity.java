@@ -1,4 +1,4 @@
-package com.levelup.java.simpleplayer.views;
+package com.levup.simpleplayer.views;
 
 import android.animation.ObjectAnimator;
 import android.content.ComponentName;
@@ -14,10 +14,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.levelup.java.simpleplayer.R;
-import com.levelup.java.simpleplayer.model.Song;
-import com.levelup.java.simpleplayer.presenters.SongsPresenter;
-import com.levelup.java.simpleplayer.services.PlayBackService;
+import com.levup.simpleplayer.R;
+import com.levup.simpleplayer.model.Song;
+import com.levup.simpleplayer.presenters.SongsPresenter;
+import com.levup.simpleplayer.services.PlayBackService;
 
 import java.util.List;
 

@@ -10,4 +10,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_gallery_fragment">Hello Gallery fragment</string>
     <string name="hello_import_fragment">Hello Import fragmen</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

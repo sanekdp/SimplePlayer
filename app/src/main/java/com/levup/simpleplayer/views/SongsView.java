@@ -1,8 +1,8 @@
-package com.levelup.java.simpleplayer.views;
+package com.levup.simpleplayer.views;
 
 import android.content.Context;
 
-import com.levelup.java.simpleplayer.model.Song;
+import com.levup.simpleplayer.model.Song;
 
 import java.util.List;
 

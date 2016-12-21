@@ -1,4 +1,4 @@
-package com.levelup.java.simpleplayer.services;
+package com.levup.simpleplayer.services;
 
 import android.app.PendingIntent;
 import android.app.Service;
@@ -15,8 +15,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 
-import com.levelup.java.simpleplayer.BuildConfig;
-import com.levelup.java.simpleplayer.views.MainActivity;
+import com.levup.simpleplayer.BuildConfig;
+import com.levup.simpleplayer.views.MainActivity;
 
 public class PlayBackService extends Service implements MediaPlayer.OnPreparedListener {
 
