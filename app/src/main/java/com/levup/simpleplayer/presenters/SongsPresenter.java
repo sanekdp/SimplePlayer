@@ -2,6 +2,7 @@ package com.levup.simpleplayer.presenters;
 
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.levup.simpleplayer.model.Song;
@@ -10,44 +11,33 @@ import com.levup.simpleplayer.views.SongsView;
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
 public class SongsPresenter {
 
     private SongsView mView = null;
 
-    public void onAttachToView(@Nullable SongsView songsView){
+    public void onAttachToView(@NonNull SongsView songsView) {
         mView = songsView;
     }
 
-    public void loadAllSongs(){
-        new AsyncTask<Void, Void, List<Song>>() {
+    private Subscription subscription = null;
 
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-            }
+    public void loadAllSongs() {
+        subscription = Observable.just(SongsRepository.getAllSongs(mView.getContext()))
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(songs -> { mView.onAllSongsLoaded(songs);},
+                        Throwable::printStackTrace);
 
-            @Override
-            protected List<Song> doInBackground(Void... voids) {
-                try{
-                    return SongsRepository.getAllSongs(mView.getContext());
-                }
-                catch (Exception e){
-                    e.printStackTrace();
-                }
-                return new ArrayList<Song>();
-            }
-
-            @Override
-            protected void onPostExecute(List<Song> songs) {
-                super.onPostExecute(songs);
-                if (mView == null) return;
-                mView.onAllSongsLoaded(songs);
-            }
-        }.execute();
     }
 
-    public void onDetach(){
-        mView = null;
+    public void onDetach() {
+        if(subscription != null)
+            subscription.unsubscribe();
     }
 
 }

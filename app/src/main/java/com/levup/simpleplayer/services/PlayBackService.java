@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 
 import com.levup.simpleplayer.BuildConfig;
-import com.levup.simpleplayer.views.MainActivity;
+import com.levup.simpleplayer.views.MusicActivity;
 
 public class PlayBackService extends Service implements MediaPlayer.OnPreparedListener {
 
@@ -113,7 +113,7 @@ public class PlayBackService extends Service implements MediaPlayer.OnPreparedLi
         PendingIntent pi = PendingIntent.getActivity(
                 getApplicationContext(),
                 0,
-                new Intent(getApplicationContext(), MainActivity.class),
+                new Intent(getApplicationContext(), MusicActivity.class),
                 PendingIntent.FLAG_NO_CREATE);
 
 //        NotificationCompat.Builder builder =
