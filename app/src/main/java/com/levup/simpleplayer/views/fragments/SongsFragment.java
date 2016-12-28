@@ -1,6 +1,7 @@
 package com.levup.simpleplayer.views.fragments;
 
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,8 @@ import android.view.ViewGroup;
 import com.levup.simpleplayer.R;
 import com.levup.simpleplayer.model.Song;
 import com.levup.simpleplayer.presenters.SongsPresenter;
+import com.levup.simpleplayer.views.MusicActivity;
+import com.levup.simpleplayer.views.MusicActivity.PlayBackInteraction;
 import com.levup.simpleplayer.views.SongsAdapter;
 import com.levup.simpleplayer.views.SongsView;
 
@@ -22,6 +25,8 @@ import java.util.List;
  * A simple {@link Fragment} subclass.
  */
 public class SongsFragment extends Fragment implements SongsView {
+
+    private PlayBackInteraction mPlayBackInteraction = null;
 
     private static final int SPAN_COUNT = 2;
     private SongsPresenter mPresenter = new SongsPresenter();
@@ -42,6 +47,13 @@ public class SongsFragment extends Fragment implements SongsView {
         mRecyclerView.setHasFixedSize(true);
     }
 
+    private void initPlayBackInteraction(){
+        if (getActivity() instanceof MusicActivity) {
+            mPlayBackInteraction = ((MusicActivity) getActivity())
+                    .getPlayBackInteraction();
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -54,10 +66,28 @@ public class SongsFragment extends Fragment implements SongsView {
         mSongsAdapter.setDataSource(songList);
         mSongsAdapter.setOnItemClickListener(view -> {
 
+            final SongsAdapter.SongViewHolder holder =
+                    (SongsAdapter.SongViewHolder) mRecyclerView.findContainingViewHolder(view);
+            if (holder == null) return;
+            final Song song = holder.getSong();
+            final long songId = song.id;
 
+            if (mPlayBackInteraction == null){
+                initPlayBackInteraction();
+            }
+
+            if (mPlayBackInteraction != null) {
+                mPlayBackInteraction.play(songId);
+            }
 
         });
         mRecyclerView.setAdapter(mSongsAdapter);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        initPlayBackInteraction();
     }
 
     @Override

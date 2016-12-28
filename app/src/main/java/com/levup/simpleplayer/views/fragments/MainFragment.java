@@ -11,10 +11,13 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.levup.simpleplayer.R;
 import com.levup.simpleplayer.views.MenuInteractionListener;
+import com.levup.simpleplayer.views.MusicActivity;
+import com.levup.simpleplayer.views.MusicActivity.PlayBackInteraction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +29,12 @@ public class MainFragment extends Fragment {
 
     private Integer mParam1;
     private MenuInteractionListener mListener = null;
+
+    private PlayBackInteraction mPlayBackInteraction = null;
+
     private ViewPager viewPager;
+
+    private ImageView mPlayPauseButton =  null;
 
     public static MainFragment newInstance(int value) {
 
@@ -50,10 +58,20 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        final View view = inflater.inflate(R.layout.fragment_main, container, false);
+
+        mPlayPauseButton = (ImageView) view.findViewById(R.id.btnPlay);
+
+        return view;
 
 
+    }
 
-        return inflater.inflate(R.layout.fragment_main, container, false);
+    private void initPlayBackInteraction(){
+        if (getActivity() instanceof MusicActivity) {
+            mPlayBackInteraction = ((MusicActivity) getActivity())
+                    .getPlayBackInteraction();
+        }
     }
 
 
@@ -66,6 +84,18 @@ public class MainFragment extends Fragment {
             setupViewPager(viewPager);
             viewPager.setOffscreenPageLimit(2);
         }
+
+        mPlayPauseButton.setOnClickListener(iv -> {
+            if (mPlayBackInteraction == null){
+                initPlayBackInteraction();
+            }
+            if (mPlayBackInteraction != null)
+                if (mPlayBackInteraction.isPaused()){
+                    mPlayBackInteraction.play();
+                }
+            else
+                mPlayBackInteraction.pause();
+        });
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -75,11 +105,6 @@ public class MainFragment extends Fragment {
         adapter.addFragment(new ArtistFragment(), this.getString(R.string.artists));
         viewPager.setAdapter(adapter);
     }
-
-//    public void showText(CharSequence text){
-//        final TextView textView = (TextView) getView().findViewById(R.id.tv);
-//        textView.setText(text);
-//    }
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -92,6 +117,11 @@ public class MainFragment extends Fragment {
         super.onAttach(activity);
         if (activity instanceof MenuInteractionListener) {
             mListener = (MenuInteractionListener) activity;
+        }
+
+        if (activity instanceof PlayBackInteraction){
+            mPlayBackInteraction = ((MusicActivity)activity)
+                    .getPlayBackInteraction();
         }
     }
 

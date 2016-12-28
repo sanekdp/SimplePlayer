@@ -15,6 +15,26 @@ public class MusicActivity extends BaseActivity {
     private PlayBackService mService;
     private boolean mBound = false;
 
+    public PlayBackInteraction getPlayBackInteraction() {
+        return mService;
+    }
+
+    private PlayBackInteraction mPlayBackInteraction = null;
+
+
+
+    public interface PlayBackInteraction {
+        boolean play();
+
+        void play(long songId);
+
+        void pause();
+
+        void stop();
+
+        boolean isPaused();
+    }
+
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
@@ -31,6 +51,8 @@ public class MusicActivity extends BaseActivity {
             mBound = false;
         }
     };
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
