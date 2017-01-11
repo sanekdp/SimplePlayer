@@ -1,25 +1,29 @@
 package com.levup.simpleplayer.views;
 
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+
+import com.jakewharton.rxbinding.support.v7.widget.RxSearchView;
 import com.levup.simpleplayer.R;
 import com.levup.simpleplayer.views.fragments.MainFragment;
 import com.levup.simpleplayer.views.fragments.PlayListFragment;
+
+import rx.Observable;
+import rx.functions.Func1;
 
 public class MenuActivity extends MusicActivity
         implements NavigationView.OnNavigationItemSelectedListener, MenuInteractionListener {
@@ -70,7 +74,26 @@ public class MenuActivity extends MusicActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu, menu);
+
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
+
+//        Observable<CharSequence> obs = RxSearchView.queryTextChanges(searchView);
+
+        queryObservable = RxSearchView.queryTextChanges(searchView);
+
         return true;
+    }
+
+    private Observable<CharSequence> queryObservable = null;
+
+    @Nullable
+    public Observable<CharSequence> getQueryObservable() {
+        return queryObservable;
     }
 
     @Override
@@ -81,9 +104,9 @@ public class MenuActivity extends MusicActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }

@@ -33,6 +33,10 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongViewHold
         notifyDataSetChanged();
     }
 
+    public List<Song> getDataSource(){
+        return mDataSource;
+    }
+
     @Override
     public SongViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());

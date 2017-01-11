@@ -3,6 +3,7 @@ package com.levup.simpleplayer.views.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,12 +15,15 @@ import android.view.ViewGroup;
 import com.levup.simpleplayer.R;
 import com.levup.simpleplayer.model.Song;
 import com.levup.simpleplayer.presenters.SongsPresenter;
+import com.levup.simpleplayer.views.MenuActivity;
 import com.levup.simpleplayer.views.MusicActivity;
 import com.levup.simpleplayer.views.MusicActivity.PlayBackInteraction;
 import com.levup.simpleplayer.views.SongsAdapter;
 import com.levup.simpleplayer.views.SongsView;
 
 import java.util.List;
+
+import rx.Observable;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,6 +36,7 @@ public class SongsFragment extends Fragment implements SongsView {
     private SongsPresenter mPresenter = new SongsPresenter();
     private RecyclerView mRecyclerView = null;
     private SongsAdapter mSongsAdapter = new SongsAdapter();
+    private Observable<Song> mSongsObservable = null;
 
     public SongsFragment() {
         // Required empty public constructor
@@ -45,9 +50,21 @@ public class SongsFragment extends Fragment implements SongsView {
         final RecyclerView.LayoutManager manager = new GridLayoutManager(getActivity(), SPAN_COUNT);
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setHasFixedSize(true);
+
+        new Handler().postDelayed(() -> {
+            if (getActivity() instanceof MenuActivity) {
+                MenuActivity menuActivity = (MenuActivity) getActivity();
+                menuActivity.getQueryObservable()
+                        .flatMap(query ->
+                                mSongsObservable.filter(song -> song.title.contains(query)))
+                        .toList()
+                        .subscribe(songList ->
+                                mSongsAdapter.setDataSource(songList));
+            }
+        }, 2000);
     }
 
-    private void initPlayBackInteraction(){
+    private void initPlayBackInteraction() {
         if (getActivity() instanceof MusicActivity) {
             mPlayBackInteraction = ((MusicActivity) getActivity())
                     .getPlayBackInteraction();
@@ -72,7 +89,7 @@ public class SongsFragment extends Fragment implements SongsView {
             final Song song = holder.getSong();
             final long songId = song.id;
 
-            if (mPlayBackInteraction == null){
+            if (mPlayBackInteraction == null) {
                 initPlayBackInteraction();
             }
 
@@ -82,6 +99,8 @@ public class SongsFragment extends Fragment implements SongsView {
 
         });
         mRecyclerView.setAdapter(mSongsAdapter);
+
+        mSongsObservable = Observable.from(songList);
     }
 
     @Override
@@ -89,6 +108,7 @@ public class SongsFragment extends Fragment implements SongsView {
         super.onAttach(activity);
         initPlayBackInteraction();
     }
+
 
     @Override
     public void onStop() {
