@@ -11,18 +11,28 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.annotation.IntegerRes;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
-
 import com.levup.simpleplayer.BuildConfig;
 import com.levup.simpleplayer.views.MusicActivity;
+import com.levup.simpleplayer.R;
 
-public class PlayBackService extends Service implements MediaPlayer.OnPreparedListener, MusicActivity.PlayBackInteraction {
+import java.util.Timer;
+import java.util.TimerTask;
+
+import rx.Observable;
+import rx.Subscriber;
+import rx.functions.Action1;
+import rx.subjects.PublishSubject;
+
+public class PlayBackService extends Service implements
+        MediaPlayer.OnPreparedListener,
+        MusicActivity.PlayBackInteraction {
 
     public static final String ACTION_PLAY = BuildConfig.APPLICATION_ID + ".action.PLAY";
-
-    private boolean isPaused = false;
 
     public static final String TAG = PlayBackService.class.getSimpleName();
     private static final int NOTIFICATION_ID = 101;
@@ -30,6 +40,10 @@ public class PlayBackService extends Service implements MediaPlayer.OnPreparedLi
     private final IBinder mBinder = new PlayBackBinder();
 
     private MediaPlayer mMediaPlayer = null;
+
+    private boolean isPaused;
+
+    private PublishSubject<Integer> mDurationSubject = PublishSubject.create();
 
     public static Intent newInstance(Context context) {
         return new Intent(context, PlayBackService.class);
@@ -44,18 +58,18 @@ public class PlayBackService extends Service implements MediaPlayer.OnPreparedLi
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "onStartCommand(" + intent.getAction() + ")");
-        if (intent.getAction() == null) return Service.START_STICKY;
+        Log.d(TAG, "onStartCommand(" + intent.getAction()+")");
+       /* if(intent.getAction() == null) return Service.START_STICKY;
         if (intent.getAction().equals(ACTION_PLAY)) {
             try {
                 mMediaPlayer = new MediaPlayer();
                 mMediaPlayer.setDataSource(this, getSongs());
                 mMediaPlayer.setOnPreparedListener(this);
-                // mMediaPlayer.prepareAsync();
+               // mMediaPlayer.prepareAsync();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        }*/
 
         return Service.START_STICKY;
     }
@@ -118,14 +132,14 @@ public class PlayBackService extends Service implements MediaPlayer.OnPreparedLi
                 new Intent(getApplicationContext(), MusicActivity.class),
                 PendingIntent.FLAG_NO_CREATE);
 
-//        NotificationCompat.Builder builder =
-//                new NotificationCompat.Builder(this)
-//                        .setSmallIcon(R.mipmap.ic_launcher)
-//                        .setContentTitle("My notification")
-//                        .setContentText("Hello World!")
-//                        .setContentIntent(pi);
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle("My notification")
+                        .setContentText("Hello World!")
+                        .setContentIntent(pi);
 
-        //startForeground(NOTIFICATION_ID, builder.build());
+//        startForeground(NOTIFICATION_ID, builder.build());
     }
 
     public void playSongId(long songId) {
@@ -134,8 +148,8 @@ public class PlayBackService extends Service implements MediaPlayer.OnPreparedLi
                 android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 songId);
         try {
-            if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
-                mMediaPlayer.start();
+            if(mMediaPlayer != null && mMediaPlayer.isPlaying()) {
+                mMediaPlayer.stop();
                 mMediaPlayer.release();
                 mMediaPlayer = null;
             }
@@ -151,21 +165,40 @@ public class PlayBackService extends Service implements MediaPlayer.OnPreparedLi
     @Override
     public boolean play() {
         try {
-            if (mMediaPlayer != null) {
+            if(mMediaPlayer != null && isPaused) {
                 mMediaPlayer.start();
                 isPaused = false;
+
+                timer.scheduleAtFixedRate(new DurationTimerTask(), 0, 1000);
+
                 return true;
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
 
     @Override
-    public void play(long songId) {
-        playSongId(songId);
+    public boolean isPaused() {
+        return isPaused;
+    }
+
+    @Override
+    public Observable<Integer> gerDurationObservable() {
+        return mDurationSubject;
+    }
+
+    @Override
+    public void onUserSeek(int progress) {
+        try {
+            if(mMediaPlayer != null && mMediaPlayer.isPlaying()) {
+                int seekPosition = (mMediaPlayer.getDuration() / 100) * progress;
+                mMediaPlayer.seekTo(seekPosition);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -174,32 +207,34 @@ public class PlayBackService extends Service implements MediaPlayer.OnPreparedLi
             if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
                 mMediaPlayer.pause();
                 isPaused = true;
+                timer.cancel();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
-    @Override
-    public void stop() {
-        try {
-            if (mMediaPlayer != null && mMediaPlayer.isPlaying())
-                mMediaPlayer.stop();
-        } catch (Exception e) {
-            e.printStackTrace();
+    private final Timer timer = new Timer();
+
+    private class DurationTimerTask extends TimerTask {
+
+        @Override
+        public void run() {
+            int current = (mMediaPlayer.getCurrentPosition() * 100) / mMediaPlayer.getDuration();
+            mDurationSubject.onNext(current);
         }
+
     }
 
     @Override
-    public boolean isPaused() {
-        return isPaused;
+    public void play(long songId) {
+        playSongId(songId);
     }
-
 
     public class PlayBackBinder extends Binder {
         public PlayBackService getService() {
             return PlayBackService.this;
         }
     }
+
 }

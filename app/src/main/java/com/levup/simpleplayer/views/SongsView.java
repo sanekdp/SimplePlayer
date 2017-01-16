@@ -2,7 +2,7 @@ package com.levup.simpleplayer.views;
 
 import android.content.Context;
 
-import com.levup.simpleplayer.model.Song;
+import com.levup.simpleplayer.models.Song;
 
 import java.util.List;
 

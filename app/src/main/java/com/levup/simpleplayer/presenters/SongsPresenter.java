@@ -1,15 +1,9 @@
 package com.levup.simpleplayer.presenters;
 
 
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
-import com.levup.simpleplayer.model.Song;
 import com.levup.simpleplayer.views.SongsView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import rx.Observable;
 import rx.Subscription;

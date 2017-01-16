@@ -1,8 +1,10 @@
 package com.levup.simpleplayer.views.fragments;
 
+
 import android.app.Activity;
-import android.net.Uri;
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.levup.simpleplayer.R;
@@ -22,79 +25,102 @@ import com.levup.simpleplayer.views.MusicActivity.PlayBackInteraction;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * A simple {@link Fragment} subclass.
+ */
 public class MainFragment extends Fragment {
 
-    private static final String SOME_VALUE = "SOME_VALUE";
-
-    private Integer mParam1;
     private MenuInteractionListener mListener = null;
 
-    private PlayBackInteraction mPlayBackInteraction = null;
+    private PlayBackInteraction mPlayBackInteraction;
+
+    public static final String SOME_VALUE = "SOME_VALUE";
 
     private ViewPager viewPager;
 
-    private ImageView mPlayPauseButton =  null;
+    private ImageView mPlayPauseButton;
+
+    private SeekBar mSeekBar = null;
 
     public static MainFragment newInstance(int value) {
-
         Bundle args = new Bundle();
-
+        args.putInt(SOME_VALUE, value);
         MainFragment fragment = new MainFragment();
-        args.putInt( SOME_VALUE , value);
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getInt(SOME_VALUE);
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if(activity instanceof MenuInteractionListener) {
+            mListener = (MenuInteractionListener) activity;
+        }
+        initPlayBackInteraction();
+    }
+
+    private void initPlayBackInteraction() {
+        if(getActivity() instanceof MusicActivity) {
+            mPlayBackInteraction = ((MusicActivity) getActivity())
+                    .getPlayBackInteraction();
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         final View view = inflater.inflate(R.layout.fragment_main, container, false);
-
         mPlayPauseButton = (ImageView) view.findViewById(R.id.btnPlay);
-
+        mSeekBar = (SeekBar) view.findViewById(R.id.sb);
         return view;
-
-
     }
-
-    private void initPlayBackInteraction(){
-        if (getActivity() instanceof MusicActivity) {
-            mPlayBackInteraction = ((MusicActivity) getActivity())
-                    .getPlayBackInteraction();
-        }
-    }
-
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int position, boolean fromUser) {
+                if(fromUser) {
+                    if(mPlayBackInteraction != null) {
+                        mPlayBackInteraction.onUserSeek(position);
+                    }
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
         viewPager = (ViewPager) view.findViewById(R.id.pager);
-        if(viewPager != null){
+        if (viewPager != null) {
             setupViewPager(viewPager);
             viewPager.setOffscreenPageLimit(2);
         }
 
         mPlayPauseButton.setOnClickListener(iv -> {
-            if (mPlayBackInteraction == null){
+            if(mPlayBackInteraction == null) {
                 initPlayBackInteraction();
             }
-            if (mPlayBackInteraction != null)
-                if (mPlayBackInteraction.isPaused()){
+            if(mPlayBackInteraction != null) {
+                if(mPlayBackInteraction.isPaused()) {
                     mPlayBackInteraction.play();
+                    mPlayBackInteraction
+                            .gerDurationObservable()
+                            .subscribe(position -> { mSeekBar.setProgress(position); });
+                } else {
+                    mPlayBackInteraction.pause();
                 }
-            else
-                mPlayBackInteraction.pause();
+            }
         });
     }
 
@@ -104,25 +130,6 @@ public class MainFragment extends Fragment {
         adapter.addFragment(new AlbumFragment(), this.getString(R.string.albums));
         adapter.addFragment(new ArtistFragment(), this.getString(R.string.artists));
         viewPager.setAdapter(adapter);
-    }
-
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.OnMainFragmentEventListener(3);
-        }
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        if (activity instanceof MenuInteractionListener) {
-            mListener = (MenuInteractionListener) activity;
-        }
-
-        if (activity instanceof PlayBackInteraction){
-            mPlayBackInteraction = ((MusicActivity)activity)
-                    .getPlayBackInteraction();
-        }
     }
 
     @Override

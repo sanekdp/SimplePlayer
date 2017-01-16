@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +13,14 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.levup.simpleplayer.R;
-import com.levup.simpleplayer.model.Song;
+import com.levup.simpleplayer.models.Song;
 import com.levup.simpleplayer.presenters.SongsRepository;
 
 import java.util.List;
 
+/**
+ * Created by java on 07.12.2016.
+ */
 
 public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongViewHolder> {
 
@@ -29,11 +33,12 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongViewHold
     }
 
     public void setDataSource(List<Song> dataSource) {
+        Log.d("TAG", "ffffffffffffffffffff" + dataSource.size());
         mDataSource = dataSource;
         notifyDataSetChanged();
     }
 
-    public List<Song> getDataSource(){
+    public List<Song> getDataSource() {
         return mDataSource;
     }
 

@@ -1,4 +1,4 @@
-package com.levup.simpleplayer.model;
+package com.levup.simpleplayer.models;
 
 public class Song {
 

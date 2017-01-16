@@ -12,12 +12,12 @@ import com.levup.simpleplayer.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class PlayListFragment extends Fragment {
+public class PlaylistsFragment extends Fragment {
 
-    public static PlayListFragment newInstance() {
+    public static PlaylistsFragment newInstance() {
 
         Bundle args = new Bundle();
-        PlayListFragment fragment = new PlayListFragment();
+        PlaylistsFragment fragment = new PlaylistsFragment();
         fragment.setArguments(args);
         return fragment;
     }
