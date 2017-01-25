@@ -15,9 +15,13 @@ import com.levup.simpleplayer.models.Song;
 import com.levup.simpleplayer.presenters.PlayListPresenter;
 import com.levup.simpleplayer.repositories.PlayListRepository;
 import com.levup.simpleplayer.views.PlayListView;
+import com.levup.simpleplayer.views.adapters.PlayListAdapter;
+import com.levup.simpleplayer.views.adapters.SongsAdapter;
 
 import java.util.List;
 
+import io.realm.Realm;
+import io.realm.RealmList;
 import rx.Single;
 import rx.SingleSubscriber;
 
@@ -26,7 +30,8 @@ import rx.SingleSubscriber;
  */
 public class PlayListsFragment extends Fragment implements PlayListView {
 
-    private RecyclerView mRecyclerView;
+    private RecyclerView mRecyclerView = null;
+    private PlayListAdapter mPlayListAdapter = new PlayListAdapter();
 
     private PlayListPresenter mPresenter = new PlayListPresenter();
 
@@ -50,6 +55,11 @@ public class PlayListsFragment extends Fragment implements PlayListView {
         super.onViewCreated(view, savedInstanceState);
         mPresenter.onAttachToView(this);
         mPresenter.loadPlayList();
+        Realm realm = Realm.getDefaultInstance();
+//        List<Song> songs = realm.where(PlayListModel.class).findAll().get;
+        RealmList<Song> song = realm.where(PlayListModel.class).findFirst().getSongRealmList();
+        mPlayListAdapter.setDataSource(song);
+        mRecyclerView.setAdapter(mPlayListAdapter);
     }
 
     @Override

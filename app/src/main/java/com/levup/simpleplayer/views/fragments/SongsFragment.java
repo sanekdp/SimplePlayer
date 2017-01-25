@@ -7,14 +7,17 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.levup.simpleplayer.R;
+import com.levup.simpleplayer.models.PlayListModel;
 import com.levup.simpleplayer.models.Song;
 import com.levup.simpleplayer.presenters.SongsPresenter;
+import com.levup.simpleplayer.repositories.PlayListRepository;
 import com.levup.simpleplayer.views.MenuActivity;
 import com.levup.simpleplayer.views.MusicActivity;
 import com.levup.simpleplayer.views.MusicActivity.PlayBackInteraction;
@@ -24,6 +27,7 @@ import com.levup.simpleplayer.views.SongsView;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.Realm;
 import rx.Observable;
 import rx.Observer;
 import rx.observables.BlockingObservable;
@@ -41,6 +45,7 @@ public class SongsFragment extends Fragment implements SongsView {
     private static final int SPAN_COUNT = 2;
 
     private SongsPresenter mPresenter = new SongsPresenter();
+    private PlayListRepository mPlayListRepository = new PlayListRepository();
 
     private Observable<Song> mSongsObservable = null;
 
@@ -111,10 +116,40 @@ public class SongsFragment extends Fragment implements SongsView {
             }
 
         });
+        mSongsAdapter.setOnLongItemClickListener(view -> {
+            showPopupMenu(view);
+            return true;
+        });
+
         mRecyclerView.setAdapter(mSongsAdapter);
 
 
         mSongsObservable = Observable.from(songList);
+    }
+
+    private void showPopupMenu(View view) {
+        PopupMenu popupMenu = new PopupMenu(getActivity(), view);
+        popupMenu.inflate(R.menu.popupmenu);
+
+        popupMenu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()){
+                case R.id.action_addSong:
+                    return addSongToPlayList(view);
+                default:
+                    return false;
+            }
+        });
+        popupMenu.show();
+    }
+
+    private boolean addSongToPlayList(View view) {
+        final SongsAdapter.SongViewHolder holder =
+                (SongsAdapter.SongViewHolder)
+                        mRecyclerView.findContainingViewHolder(view);
+        if (holder != null) {
+            mPlayListRepository.addSong(holder.getSong());
+        }
+        return false;
     }
 
     @Override

@@ -18,4 +18,5 @@
     <string name="albums">Albums</string>
     <string name="artists">Artists</string>
     <string name="search_hint">search_hint</string>
+    <string name="now_playing">NOW PLAYING</string>
 </resources>
