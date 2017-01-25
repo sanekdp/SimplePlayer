@@ -1,10 +1,9 @@
-package com.levup.simpleplayer.views;
+package com.levup.simpleplayer.views.adapters;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,46 +13,34 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.levup.simpleplayer.R;
 import com.levup.simpleplayer.models.Song;
-import com.levup.simpleplayer.presenters.SongsRepository;
+import com.levup.simpleplayer.repositories.SongsRepository;
 
 import java.util.List;
 
 /**
- * Created by java on 07.12.2016.
+ * Created by java on 18.01.2017.
  */
 
-public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongViewHolder> {
+public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.PlayListItemViewHolder> {
 
     private List<Song> mDataSource = null;
 
-    private View.OnClickListener mOnItemClickListener;
-
-    public void setOnItemClickListener(View.OnClickListener onClickListener) {
-        mOnItemClickListener = onClickListener;
-    }
-
-    public void setDataSource(List<Song> dataSource) {
-        Log.d("TAG", "ffffffffffffffffffff" + dataSource.size());
-        mDataSource = dataSource;
+    public void setDataSource(List<Song> songs) {
+        mDataSource = songs;
         notifyDataSetChanged();
     }
 
-    public List<Song> getDataSource() {
-        return mDataSource;
+    @Override
+    public PlayListItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        final View view = inflater.inflate(R.layout.view_item_main_song, parent, false);
+        return new PlayListItemViewHolder(view);
     }
 
     @Override
-    public SongViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        final View view = layoutInflater.inflate(R.layout.item_main_song, parent, false);
-        return new SongViewHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(SongViewHolder holder, int position) {
+    public void onBindViewHolder(PlayListItemViewHolder holder, int position) {
         final Song song = mDataSource.get(position);
         holder.bind(song);
-        holder.itemView.setOnClickListener(mOnItemClickListener);
     }
 
     @Override
@@ -61,7 +48,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongViewHold
         return mDataSource == null ? 0 : mDataSource.size();
     }
 
-    public static class SongViewHolder extends RecyclerView.ViewHolder {
+    class PlayListItemViewHolder extends RecyclerView.ViewHolder {
 
         private Song mSong;
 
@@ -69,7 +56,8 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongViewHold
         private TextView mArtistTextView;
         private TextView mTitleTextView;
 
-        public SongViewHolder(View itemView) {
+
+        public PlayListItemViewHolder(View itemView) {
             super(itemView);
             mCoverImageView = (ImageView) itemView.findViewById(R.id.coverImageView);
             mArtistTextView = (TextView) itemView.findViewById(R.id.artistTextView);
@@ -78,11 +66,11 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongViewHold
 
         private void bind(@NonNull Song song) {
             mSong = song;
-            mArtistTextView.setText(song.artistName);
-            mTitleTextView.setText(song.title);
+            mArtistTextView.setText(song.getArtistName());
+            mTitleTextView.setText(song.getTitle());
             String cover = SongsRepository.getAlbumCover(
                     itemView.getContext(),
-                    song.albumId);
+                    song.getAlbumId());
             Glide
                     .with(itemView.getContext())
                     .load(cover)
@@ -95,5 +83,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.SongViewHold
         public Song getSong() {
             return mSong;
         }
+
     }
+
 }

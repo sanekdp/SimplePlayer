@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.levup.simpleplayer.R;
+
 public class SplashActivity extends Activity {
 
     @Override

@@ -1,14 +1,18 @@
 package com.levup.simpleplayer.presenters;
 
-
 import android.support.annotation.NonNull;
 
+import com.levup.simpleplayer.repositories.SongsRepository;
 import com.levup.simpleplayer.views.SongsView;
 
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+
+/**
+ * Created by java on 05.12.2016.
+ */
 
 public class SongsPresenter {
 

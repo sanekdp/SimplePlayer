@@ -18,19 +18,15 @@ import com.levup.simpleplayer.presenters.SongsPresenter;
 import com.levup.simpleplayer.views.MenuActivity;
 import com.levup.simpleplayer.views.MusicActivity;
 import com.levup.simpleplayer.views.MusicActivity.PlayBackInteraction;
-import com.levup.simpleplayer.views.SongsAdapter;
+import com.levup.simpleplayer.views.adapters.SongsAdapter;
 import com.levup.simpleplayer.views.SongsView;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import rx.Completable;
 import rx.Observable;
-import rx.Scheduler;
-import rx.Single;
-import rx.Subscriber;
-import rx.exceptions.MissingBackpressureException;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
+import rx.Observer;
+import rx.observables.BlockingObservable;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -88,9 +84,10 @@ public class SongsFragment extends Fragment implements SongsView {
                 menuActivity.getQueryObservable()
                         .flatMap(query ->
                                 mSongsObservable
-                                        .filter(song -> song.title.contains(query))
+                                        .filter(song -> song.getTitle().contains(query))
                                         .toList())
                         .subscribe(songList -> mSongsAdapter.setDataSource(songList));
+
             }
         }, 2000);
     }
@@ -104,7 +101,7 @@ public class SongsFragment extends Fragment implements SongsView {
                             mRecyclerView.findContainingViewHolder(view);
             if(holder == null) return;
             final Song song = holder.getSong();
-            final long songId = song.id;
+            final long songId = song.getId();
 
             if(mPlayBackInteraction == null) {
                 initPlayBackInteraction();

@@ -28,8 +28,12 @@ import com.levup.simpleplayer.services.PlayBackService;
 import com.levup.simpleplayer.views.base.BaseActivity;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
+import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 
 public class MusicActivity extends BaseActivity {
@@ -48,9 +52,12 @@ public class MusicActivity extends BaseActivity {
 
         void onUserSeek(int progress);
 
+
+
     }
 
     private PlayBackService mService;
+
     private boolean mBound = false;
 
     @Nullable

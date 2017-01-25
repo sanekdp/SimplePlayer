@@ -6,10 +6,14 @@ import com.levup.simpleplayer.models.Song;
 
 import java.util.List;
 
+/**
+ * Created by java on 05.12.2016.
+ */
+
 public interface SongsView {
 
-    public Context getContext();
+    Context getContext();
 
-    public void onAllSongsLoaded(List<Song> songList);
+    void onAllSongsLoaded(List<Song> songList);
 
 }

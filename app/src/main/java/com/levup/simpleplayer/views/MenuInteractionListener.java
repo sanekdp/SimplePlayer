@@ -5,5 +5,7 @@ package com.levup.simpleplayer.views;
  */
 
 public interface MenuInteractionListener {
-    public void onMainFragmentEventListener(int value);
+
+    void onMainFragmentEventListener(int value);
+
 }
